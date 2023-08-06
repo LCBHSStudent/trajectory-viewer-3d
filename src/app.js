@@ -20,12 +20,8 @@
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {addDataToMap, wrapTo} from '@kepler.gl/actions';
+// import {addDataToMap, wrapTo} from '@kepler.gl/actions';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
-import styled from 'styled-components';
-import {theme} from '@kepler.gl/styles';
-
-import sampleData, {config} from './data/sample-data';
 
 const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
 
@@ -35,6 +31,7 @@ import {
   PanelToggleFactory,
   CustomPanelsFactory,
   MapPopoverFactory,
+  DatasetSectionFactory,
   injectComponents
 } from '@kepler.gl/components';
 
@@ -43,20 +40,8 @@ import CustomSidebarFactory from './components/side-bar';
 import CustomPanelToggleFactory from './components/panel-toggle';
 import CustomSidePanelFactory from './components/custom-panel';
 import CustomMapPopoverFactory from './components/custom-map-popover';
+import CustomDatasectionFactory from './components/custom-dataset-section';
 
-const StyledMapConfigDisplay = styled.div`
-  position: absolute;
-  z-index: 100;
-  bottom: 10px;
-  right: 10px;
-  background-color: ${theme.sidePanelBg};
-  font-size: 11px;
-  width: 300px;
-  color: ${theme.textColor};
-  word-wrap: break-word;
-  min-height: 60px;
-  padding: 10px;
-`;
 
 // Inject custom components
 const KeplerGl = injectComponents([
@@ -64,27 +49,32 @@ const KeplerGl = injectComponents([
   [PanelHeaderFactory, CustomPanelHeaderFactory],
   [PanelToggleFactory, CustomPanelToggleFactory],
   [CustomPanelsFactory, CustomSidePanelFactory],
-  [MapPopoverFactory, CustomMapPopoverFactory]
+  [MapPopoverFactory, CustomMapPopoverFactory],
+  [DatasetSectionFactory, CustomDatasectionFactory]
 ]);
 
 class App extends Component {
   componentDidMount() {
-    this.props.dispatch(wrapTo('map1', addDataToMap({datasets: sampleData, config})));
+    // this.props.dispatch(wrapTo('map_container', addDataToMap({datasets: sampleData, config})));
+  }
+
+  getMapboxRef = (mapbox, _index) => {
+    if (!mapbox) {
+      return
+    } else {
+      const map = mapbox.getMap();
+      map.setMaxPitch(87.5);
+    }
   }
 
   render() {
     return (
-      <div style={{position: 'absolute', width: '100%', height: '100%'}}>
+      <div style={{position: 'absolute', width: '100%', height: '100%', background: 'rgb(9, 16, 26)'}}>
         <AutoSizer>
           {({height, width}) => (
-            <KeplerGl mapboxApiAccessToken={MAPBOX_TOKEN} id="map1" width={width} height={height} />
+            <KeplerGl mapboxApiAccessToken={MAPBOX_TOKEN} id="map_container" width={width} height={height} getMapboxRef={this.getMapboxRef} appName="trajector viewer" version="v0.1.0"/>
           )}
         </AutoSizer>
-        <StyledMapConfigDisplay>
-          {this.props.app.mapConfig
-            ? JSON.stringify(this.props.app.mapConfig)
-            : 'Click Save Config to Display Config Here'}
-        </StyledMapConfigDisplay>
       </div>
     );
   }

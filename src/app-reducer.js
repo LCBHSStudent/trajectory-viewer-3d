@@ -19,20 +19,22 @@
 // THE SOFTWARE.
 
 import {createAction, handleActions} from 'redux-actions';
-import KeplerGlSchema from '@kepler.gl/schemas';
+import {combineReducers} from 'redux'
+import keplerGlReducer from '@kepler.gl/reducers';
 
 // CONSTANTS
 export const INIT = 'INIT';
-export const SET_MAP_CONFIG = 'SET_MAP_CONFIG';
+export const FETCH_BASEDATA = 'FETCH_BASEDATA';
 
 // ACTIONS
 export const appInit = createAction(INIT);
-export const setMapConfig = createAction(SET_MAP_CONFIG);
+export const fetchBasedata = createAction(FETCH_BASEDATA);
 
 // INITIAL_STATE
-const initialState = {
-  appName: 'example',
-  loaded: false
+const initialAppState = {
+  appName: 'trajectory viewer',
+  loaded: false,
+  showBasedata: false,
 };
 
 // REDUCER
@@ -42,12 +44,50 @@ const appReducer = handleActions(
       ...state,
       loaded: true
     }),
-    [SET_MAP_CONFIG]: (state, action) => ({
-      ...state,
-      mapConfig: KeplerGlSchema.getConfigToSave(action.payload)
-    })
+    [FETCH_BASEDATA]: (state, action) => {
+      console.log(action, action.payload);
+      return ({
+        ...state,
+        showBasedata: true
+      })
+    }
   },
-  initialState
+  initialAppState
 );
 
-export default appReducer;
+const initReducer = combineReducers({
+  // mount keplerGl reducer
+  keplerGl: keplerGlReducer.initialState({
+    // In order to provide single file export functionality
+    // we are going to set the mapbox access token to be used
+    // in the exported file
+    uiState: {
+      // hide side panel when mounted
+      activeSidePanel: null,
+      // hide all modals whtn mounted
+      currentModal: null
+    },
+    visState: {
+      loaders: [], // Add additional loaders.gl loaders here
+      loadOptions: {} // Add additional loaders.gl loader options here
+    },
+    mapState: {
+      maxPitch: 87.5,
+    }
+  }),
+  app: appReducer
+});
+
+const composedUpdaters = {
+  ['NULL_ACTION']: null,
+};
+
+// export initReducer to be combined in trajectory viewer
+const composedReducer = (state, action) => {
+  if (composedUpdaters[action.type]) {
+    return composedUpdaters[action.type](state, action);
+  }
+  return initReducer(state, action);
+};
+
+export default composedReducer;

@@ -10,6 +10,7 @@
     "@kepler.gl/reducers": "^3.0.0-alpha.0",
     "@kepler.gl/schemas": "^3.0.0-alpha.0",
     "@kepler.gl/styles": "^3.0.0-alpha.0",
+    "antd": "^5.8.2",
     "global": "^4.3.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",

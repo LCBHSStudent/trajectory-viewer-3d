@@ -18,23 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {createStore, combineReducers, applyMiddleware, compose} from 'redux';
-import keplerGlReducer, {enhanceReduxMiddleware} from '@kepler.gl/reducers';
-import appReducer from './app-reducer';
+import {createStore, applyMiddleware, compose} from 'redux';
+import {enhanceReduxMiddleware} from '@kepler.gl/reducers';
+import initReducer from './app-reducer';
 
-const customizedKeplerGlReducer = keplerGlReducer.initialState({
-  uiState: {
-    // hide side panel when mounted
-    activeSidePanel: null,
-    // hide all modals whtn mounted
-    currentModal: null
-  }
-});
-
-const reducers = combineReducers({
-  keplerGl: customizedKeplerGlReducer,
-  app: appReducer
-});
+const reducers = initReducer;
 
 const middlewares = enhanceReduxMiddleware([]);
 const enhancers = [applyMiddleware(...middlewares)];

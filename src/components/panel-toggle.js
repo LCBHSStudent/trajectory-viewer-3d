@@ -22,14 +22,16 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {PanelToggleFactory, Button, Icons, withState} from '@kepler.gl/components';
+// import {addDataToMap, wrapTo} from '@kepler.gl/actions';
 import {visStateLens} from '@kepler.gl/reducers';
 
-import {setMapConfig} from '../app-reducer';
+
+import {fetchBasedata} from '../app-reducer';
 
 const StyledPanelToggleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  padding-right: 16px;
+  padding-right: 0px;
   background-color: ${props => props.theme.sidePanelHeaderBg};
 `;
 
@@ -43,9 +45,9 @@ const CustomPanelToggleFactory = (...deps) => {
     <StyledPanelToggleWrapper>
       <PanelToggle {...props} />
       <ButtonWrapper>
-        <Button onClick={() => props.onClickSaveConfig(props.mapState)} width="120px">
-          <Icons.Files height="12px" />
-          Save Config
+        <Button onClick={() => props.onClickFetchBasedata(props.mapState)} width="140px">
+          <Icons.Db height="12px" />
+          Fetch Basedata
         </Button>
       </ButtonWrapper>
     </StyledPanelToggleWrapper>
@@ -55,9 +57,9 @@ const CustomPanelToggleFactory = (...deps) => {
     // lenses
     [visStateLens],
     // mapStateToProps
-    state => ({mapState: state.keplerGl.map1}),
+    state => ({mapState: state.keplerGl.map_container}),
     {
-      onClickSaveConfig: setMapConfig
+      onClickFetchBasedata: fetchBasedata
     }
   )(PanelToggleWrapper);
 };
